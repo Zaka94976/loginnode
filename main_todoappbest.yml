@@ -1,0 +1,82 @@
+# Azure DevOps pipeline for this Node.js API.
+# Replace the Azure connection and web app name below before running it.
+# This version is configured for Azure App Service on Linux.
+trigger:
+  - main
+
+pr:
+  - main
+
+variables:
+  vmImageName: "ubuntu-latest"
+  nodeVersion: "20.x"
+  azureServiceConnection: "YOUR-AZURE-SERVICE-CONNECTION"
+  webAppName: "YOUR-AZURE-WEBAPP-NAME"
+  artifactName: "drop"
+  packageFile: "$(Build.ArtifactStagingDirectory)/todoappbest.zip"
+
+stages:
+  - stage: Build
+    displayName: Build Package
+    jobs:
+      - job: BuildJob
+        displayName: Build Node API
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: UseNode@1
+            displayName: Use Node.js $(nodeVersion)
+            inputs:
+              version: "$(nodeVersion)"
+
+          - script: npm ci
+            displayName: Install dependencies
+
+          - task: CopyFiles@2
+            displayName: Stage deployment files
+            inputs:
+              SourceFolder: "$(Build.SourcesDirectory)"
+              Contents: |
+                src/**
+                package.json
+                package-lock.json
+              TargetFolder: "$(Build.ArtifactStagingDirectory)/app"
+
+          - task: ArchiveFiles@2
+            displayName: Create deployment zip
+            inputs:
+              rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/app"
+              includeRootFolder: false
+              archiveType: zip
+              archiveFile: "$(packageFile)"
+              replaceExistingArchive: true
+
+          - publish: "$(packageFile)"
+            artifact: "$(artifactName)"
+            displayName: Publish deployment artifact
+
+  - stage: Deploy
+    displayName: Deploy To Azure
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: DeployWebApp
+        displayName: Deploy Azure App Service
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - download: current
+            artifact: "$(artifactName)"
+
+          - task: AzureWebApp@1
+            displayName: Deploy to Azure App Service
+            inputs:
+              azureSubscription: "$(azureServiceConnection)"
+              appType: "webAppLinux"
+              appName: "$(webAppName)"
+              package: "$(Pipeline.Workspace)/$(artifactName)/todoappbest.zip"
+              runtimeStack: "NODE|20-lts"
+              startUpCommand: "npm start"
+              appSettings: >
+                -NODE_ENV production
+                -SCM_DO_BUILD_DURING_DEPLOYMENT true
