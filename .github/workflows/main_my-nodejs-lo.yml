@@ -34,6 +34,7 @@ jobs:
         run: |
           mkdir -p release
           cp package.json package-lock.json release/
+          cp web.config release/
           cp -r src release/src
           cp -r node_modules release/node_modules
 
@@ -51,4 +52,3 @@ jobs:
           app-name: my-nodejs-lo
           slot-name: Production
           package: ./release
-          startup-command: npm start
