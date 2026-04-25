@@ -32,6 +32,9 @@ stages:
           - script: npm ci
             displayName: Install dependencies
 
+          - script: npm run build
+            displayName: Build transpiled output
+
           - task: CopyFiles@2
             displayName: Stage deployment files
             inputs:
