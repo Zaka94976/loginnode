@@ -1,0 +1,10 @@
+[33mwarn[39m: Redis not available, using in-memory fallback {"service":"otp-auth","timestamp":"2026-04-25T19:40:25.811Z"}
+[32minfo[39m: Redis connection established {"service":"otp-auth","timestamp":"2026-04-25T19:40:25.828Z"}
+[32minfo[39m: Server running on port 3002 {"service":"otp-auth","timestamp":"2026-04-25T19:40:25.835Z"}
+[32minfo[39m: Environment: development {"service":"otp-auth","timestamp":"2026-04-25T19:40:25.836Z"}
+[32minfo[39m: OTP Provider: mock {"service":"otp-auth","timestamp":"2026-04-25T19:40:25.837Z"}
+[33mwarn[39m: Redis error, using in-memory fallback: {"service":"otp-auth","timestamp":"2026-04-25T19:40:25.847Z"}
+[33mwarn[39m: Redis error, using in-memory fallback: {"service":"otp-auth","timestamp":"2026-04-25T19:40:25.965Z"}
+[33mwarn[39m: Redis error, using in-memory fallback: {"service":"otp-auth","timestamp":"2026-04-25T19:40:26.186Z"}
+[33mwarn[39m: Redis error, using in-memory fallback: {"service":"otp-auth","timestamp":"2026-04-25T19:40:26.495Z"}
+[33mwarn[39m: Redis max retries reached, using in-memory fallback {"service":"otp-auth","timestamp":"2026-04-25T19:40:26.497Z"}
