@@ -1,6 +1,7 @@
 const OTPProvider = require("./providerInterface");
 const { config } = require("../../config");
 const logger = require("../../utils/logger");
+const axios = require("axios");
 
 class TwilioProvider extends OTPProvider {
   constructor() {
@@ -28,25 +29,26 @@ class TwilioProvider extends OTPProvider {
     const message = `Your OTP code is: ${otp}. Valid for ${config.otp.expirySeconds / 60} minutes.`;
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `https://api.twilio.com/2010-04-01/Accounts/${this.accountSid}/Messages.json`,
+        new URLSearchParams({
+          To: phone,
+          From: this.phoneNumber,
+          Body: message,
+        }).toString(),
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: `Basic ${Buffer.from(`${this.accountSid}:${this.authToken}`).toString("base64")}`,
+            Authorization: `Basic ${Buffer.from(
+              `${this.accountSid}:${this.authToken}`
+            ).toString("base64")}`,
           },
-          body: new URLSearchParams({
-            To: phone,
-            From: this.phoneNumber,
-            Body: message,
-          }),
-        },
+        }
       );
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) {
+      if (response.status !== 201) {
         logger.error("Twilio API error:", data);
         throw new Error(data.message || "Failed to send SMS");
       }

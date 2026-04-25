@@ -17,6 +17,12 @@ Node.js OTP authentication API for login flows.
 - npm
 - Redis (optional, depending on provider and environment)
 
+## Azure App Service
+
+For Azure App Service on Windows, set the app setting `WEBSITE_NODE_DEFAULT_VERSION`
+to a supported Node.js runtime that matches this project. The app uses modern Node
+syntax and will fail to start on older iisnode defaults.
+
 ## Install
 
 ```bash
