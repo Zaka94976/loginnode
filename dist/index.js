@@ -1,0 +1,72 @@
+"use strict";
+
+require("dotenv").config();
+const express = require("express");
+const helmet = require("helmet");
+const cors = require("cors");
+const rateLimit = require("express-rate-limit");
+const {
+  config,
+  validateConfig
+} = require("./config");
+const logger = require("./utils/logger");
+const redisService = require("./services/redisService");
+const authRoutes = require("./routes/auth");
+const {
+  errorHandler
+} = require("./middleware/errorHandler");
+const {
+  generateRequestId
+} = require("./utils/otpGenerator");
+validateConfig();
+const app = express();
+app.use(helmet());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+app.use(express.json());
+app.use((req, res, next) => {
+  req.requestId = generateRequestId();
+  res.setHeader("X-Request-ID", req.requestId);
+  next();
+});
+const limiter = rateLimit({
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.maxRequests,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: {
+      code: "RATE_LIMITED",
+      message: "Too many requests"
+    }
+  }
+});
+app.use("/api", limiter);
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is healthy",
+    timestamp: new Date().toISOString()
+  });
+});
+app.use("/api/auth", authRoutes);
+app.use(errorHandler);
+async function startServer() {
+  try {
+    await redisService.connect();
+    logger.info("Redis connection established");
+  } catch (error) {
+    logger.warn("Failed to connect to Redis, running without OTP storage");
+  }
+  app.listen(config.server.port, () => {
+    logger.info(`Server running on port ${config.server.port}`);
+    logger.info(`Environment: ${config.server.nodeEnv}`);
+    logger.info(`OTP Provider: ${config.otp.provider}`);
+  });
+}
+startServer();
+module.exports = app;
