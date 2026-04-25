@@ -37,7 +37,7 @@ stages:
             inputs:
               SourceFolder: "$(Build.SourcesDirectory)"
               Contents: |
-                src/**
+                dist/**
                 package.json
                 package-lock.json
               TargetFolder: "$(Build.ArtifactStagingDirectory)/app"
