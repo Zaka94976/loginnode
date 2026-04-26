@@ -38,6 +38,15 @@ app.use((req, res, next) => {
 const limiter = rateLimit({
   windowMs: config.rateLimit.windowMs,
   max: config.rateLimit.maxRequests,
+  keyGenerator: req => {
+    var _req$headers$xForwar, _req$connection;
+    // Extract IP from proxy headers or connection, then remove any port number
+    let ip = ((_req$headers$xForwar = req.headers['x-forwarded-for']) === null || _req$headers$xForwar === void 0 || (_req$headers$xForwar = _req$headers$xForwar.split(',')[0]) === null || _req$headers$xForwar === void 0 ? void 0 : _req$headers$xForwar.trim()) || req.headers['x-real-ip'] || req.ip || ((_req$connection = req.connection) === null || _req$connection === void 0 ? void 0 : _req$connection.remoteAddress) || '';
+
+    // Strip brackets from IPv6 and remove trailing port (e.g., "[::1]:12345" -> "::1")
+    ip = ip.replace(/^\[|\]$/g, '').replace(/:\d+$/, '');
+    return ip || 'anonymous';
+  },
   standardHeaders: true,
   legacyHeaders: false,
   message: {

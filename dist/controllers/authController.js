@@ -23,6 +23,14 @@ class AuthController {
     try {
       const requestId = generateRequestId();
       req.requestId = requestId;
+
+      // Normalize 'phone' field to 'identifier' and infer type
+      if (!req.body.identifier && req.body.phone) {
+        req.body.identifier = req.body.phone;
+        if (!req.body.identifierType) {
+          req.body.identifierType = 'phone';
+        }
+      }
       const {
         identifier,
         identifierType
@@ -55,6 +63,11 @@ class AuthController {
     try {
       const requestId = generateRequestId();
       req.requestId = requestId;
+
+      // Normalize 'phone' field to 'identifier'
+      if (!req.body.identifier && req.body.phone) {
+        req.body.identifier = req.body.phone;
+      }
       const {
         identifier,
         otp

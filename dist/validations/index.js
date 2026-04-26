@@ -6,11 +6,15 @@ const {
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 const sendOTPSchema = z.object({
-  identifier: z.string().min(1, "Identifier is required"),
+  identifier: z.string({
+    required_error: "Identifier is required"
+  }).min(1, "Identifier is required"),
   identifierType: z.enum(["email", "phone"]).optional()
 });
 const verifyOTPSchema = z.object({
-  identifier: z.string().min(1, "Identifier is required"),
+  identifier: z.string({
+    required_error: "Identifier is required"
+  }).min(1, "Identifier is required"),
   otp: z.string().length(6, "OTP must be 6 digits")
 });
 function validateSendOTP(data) {
