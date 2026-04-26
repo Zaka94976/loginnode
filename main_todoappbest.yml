@@ -41,6 +41,7 @@ stages:
               SourceFolder: "$(Build.SourcesDirectory)"
               Contents: |
                 dist/**
+                web.config
                 package.json
                 package-lock.json
               TargetFolder: "$(Build.ArtifactStagingDirectory)/app"
