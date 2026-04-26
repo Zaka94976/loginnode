@@ -50,6 +50,19 @@ app.get("/health", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.json({
+    name: "OTP Auth API",
+    version: "1.0.0",
+    status: "running",
+    endpoints: {
+      health: "GET /health",
+      sendOTP: "POST /api/auth/send-otp",
+      verifyOTP: "POST /api/auth/verify-otp"
+    }
+  });
+});
+
 app.use("/api/auth", authRoutes);
 
 app.use(errorHandler);

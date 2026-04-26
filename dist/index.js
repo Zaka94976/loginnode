@@ -53,6 +53,18 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+app.get("/", (req, res) => {
+  res.json({
+    name: "OTP Auth API",
+    version: "1.0.0",
+    status: "running",
+    endpoints: {
+      health: "GET /health",
+      sendOTP: "POST /api/auth/send-otp",
+      verifyOTP: "POST /api/auth/verify-otp"
+    }
+  });
+});
 app.use("/api/auth", authRoutes);
 app.use(errorHandler);
 async function startServer() {
