@@ -20,6 +20,9 @@ const {
 } = require("./utils/otpGenerator");
 validateConfig();
 const app = express();
+
+// Trust Azure's proxy headers for correct client IP
+app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors({
   origin: '*',
